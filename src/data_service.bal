@@ -22,7 +22,7 @@ service<http:Service> data_service bind {} {
         // Endpoints can connect to dbs with SQL connector
         endpoint sql:Client customerDB {
             database:sql:DB_H2_FILE,
-            host:"./",
+            host:"/sample-db/",
             port:10,
             name:DB_NAME,
             username:user_name,
