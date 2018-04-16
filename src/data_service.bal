@@ -2,7 +2,6 @@ import ballerina/http;
 import ballerina/sql;
 import ballerina/config;
 
-
 // Get database credentials via configuration API.
 @final string USER_NAME =
        config:getAsString("username") ?: "root";
@@ -50,6 +49,3 @@ service<http:Service> data_service bind {} {
       _ = caller -> respond(res);
     }
 }
-
-
-
