@@ -1,15 +1,15 @@
 import ballerina/http;
 import ballerina/sql;
+import ballerina/h2;
 import ballerina/config;
-
 
 // Get database credentials via configuration API.
 @final string USER_NAME =
-       config:getAsString("username") ?: "root";
+       config:getAsString("username");
 @final string PASSWORD =
-       config:getAsString("password") ?: "root";
+       config:getAsString("password");
 @final string DB_HOST =
-       config:getAsString("db_host") ?: "./";
+       config:getAsString("db_host");
 
 @final string DB_NAME="CUSTOMER_DB";
 
@@ -25,22 +25,21 @@ service<http:Service> data_service bind {} {
     customers (endpoint caller, http:Request req) {
 
       // Endpoints can connect to dbs with SQL connector
-      endpoint sql:Client customerDB {
-          database:sql:DB_H2_FILE,
-          host:DB_HOST,
-          port:10,
-          name:DB_NAME,
-          username:USER_NAME,
-          password:PASSWORD,
-          options:{ maximumPoolSize:5 }
+      endpoint h2:Client customerDB {
+        path:DB_HOST,
+        name:DB_NAME,
+        username:USER_NAME,
+        password:PASSWORD,
+        poolOptions:{maximumPoolSize:1},
+        dbOptions: ()
       };
+
 
       // Invoke 'select' command against remote database
       // table primitive type represents a set of records
       table dt = check customerDB -> select(
-                                "SELECT * FROM CUSTOMER",
-                                null,
-                                null);
+                                "SELECT * FROM CUSTOMER"
+                                , null);
 
       // tables can be cast to JSON and XML
       json response = check <json>dt;
