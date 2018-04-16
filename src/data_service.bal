@@ -16,38 +16,37 @@ import ballerina/config;
 @http:ServiceConfig {
     basePath:"/"
 }
-service<http:Service> data_service bind {} {
+service<http:Service> CustomerDataMgt bind {} {
 
-    @http:ResourceConfig {
-        methods:["GET"],
-        path:"/customer"
-    }
-    customers (endpoint caller, http:Request req) {
+  @http:ResourceConfig {
+    methods:["GET"],
+    path:"/customer"
+  }
+  customers (endpoint caller, http:Request req) {
 
-      // Endpoints can connect to dbs with SQL connector
-      endpoint h2:Client customerDB {
-        path:DB_HOST,
-        name:DB_NAME,
-        username:USER_NAME,
-        password:PASSWORD,
-        poolOptions:{maximumPoolSize:1},
-        dbOptions: ()
-      };
+    // Endpoints can connect to dbs with SQL connector
+    endpoint h2:Client customerDB {
+      path:DB_HOST,
+      name:DB_NAME,
+      username:USER_NAME,
+      password:PASSWORD,
+      poolOptions:{maximumPoolSize:1},
+      dbOptions: ()
+    };
 
+    // Invoke 'select' command against remote database
+    // table primitive type represents a set of records
+    table dt = check customerDB -> select(
+                              "SELECT * FROM CUSTOMER"
+                              , null);
 
-      // Invoke 'select' command against remote database
-      // table primitive type represents a set of records
-      table dt = check customerDB -> select(
-                                "SELECT * FROM CUSTOMER"
-                                , null);
+    // tables can be cast to JSON and XML
+    json response = check <json>dt;
 
-      // tables can be cast to JSON and XML
-      json response = check <json>dt;
-
-      http:Response res = new;
-      res.setJsonPayload(response);
-      _ = caller -> respond(res);
-    }
+    http:Response res = new;
+    res.setJsonPayload(response);
+    _ = caller -> respond(res);
+  }
 }
 
 
