@@ -10,7 +10,6 @@ import ballerina/config;
        config:getAsString("password");
 @final string DB_HOST =
        config:getAsString("db_host");
-
 @final string DB_NAME="CUSTOMER_DB";
 
 @http:ServiceConfig {
@@ -23,7 +22,6 @@ service<http:Service> CustomerDataMgt bind {} {
     path:"/customer"
   }
   customers (endpoint caller, http:Request req) {
-
     // Endpoints can connect to dbs with SQL connector
     endpoint h2:Client customerDB {
       path:DB_HOST,
