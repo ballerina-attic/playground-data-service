@@ -32,8 +32,7 @@ service<http:Service> CustomerDataMgt bind listener {
       name:DB_NAME,
       username:USER_NAME,
       password:PASSWORD,
-      poolOptions:{maximumPoolSize:1},
-      dbOptions: ()
+      poolOptions:{maximumPoolSize:1}
     };
 
     // Invoke 'select' command against remote database.
