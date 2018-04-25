@@ -8,12 +8,9 @@ endpoint http:Listener listener {
 };
 
 // Get database credentials via configuration API.
-@final string USER_NAME =
-       config:getAsString("username");
-@final string PASSWORD =
-       config:getAsString("password");
-@final string DB_HOST =
-       config:getAsString("db_host");
+@final string USER_NAME =  config:getAsString("username");
+@final string PASSWORD = config:getAsString("password");
+@final string DB_HOST = config:getAsString("db_host");
 @final string DB_NAME="CUSTOMER_DB";
 
 @http:ServiceConfig {
