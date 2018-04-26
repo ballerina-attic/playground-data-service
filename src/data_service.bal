@@ -35,8 +35,7 @@ service<http:Service> CustomerDataMgt bind listener {
     // Invoke 'select' command against remote database.
     // Table primitive type represents a set of records.
     table dt = check customerDB -> select(
-                              "SELECT * FROM CUSTOMER"
-                              , null);
+                              "SELECT * FROM CUSTOMER", null);
 
     // Tables can be cast to JSON and XML.
     json response = check <json>dt;
