@@ -41,7 +41,7 @@ service<http:Service> CustomerDataMgt bind listener {
     json response = check <json>dt;
 
     http:Response res = new;
-    res.setJsonPayload(response);
+    res.setJsonPayload(untaint response);
     _ = caller -> respond(res);
   }
 }
