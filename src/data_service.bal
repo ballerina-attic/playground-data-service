@@ -1,7 +1,7 @@
-import ballerina/http;
-import ballerina/sql;
-import ballerina/h2;
 import ballerina/config;
+import ballerina/http;
+import ballerina/h2;
+import ballerina/sql;
 
 endpoint http:Listener listener {
     port:9090
@@ -11,7 +11,7 @@ endpoint http:Listener listener {
 @final string USER_NAME =  config:getAsString("username");
 @final string PASSWORD = config:getAsString("password");
 @final string DB_HOST = config:getAsString("db_host");
-@final string DB_NAME="CUSTOMER_DB";
+@final string DB_NAME = "CUSTOMER_DB";
 
 @http:ServiceConfig {
     basePath:"/"
@@ -22,14 +22,14 @@ service<http:Service> CustomerDataMgt bind listener {
     methods:["GET"],
     path:"/customer"
   }
-  customers (endpoint caller, http:Request req) {
+  customers(endpoint caller, http:Request req) {
     // Endpoints can connect to dbs with SQL connector.
     endpoint h2:Client customerDB {
-      path:DB_HOST,
-      name:DB_NAME,
-      username:USER_NAME,
-      password:PASSWORD,
-      poolOptions:{maximumPoolSize:1}
+      path: DB_HOST,
+      name: DB_NAME,
+      username: USER_NAME,
+      password: PASSWORD,
+      poolOptions: { maximumPoolSize: 1 }
     };
 
     // Invoke 'select' command against remote database.
@@ -42,6 +42,6 @@ service<http:Service> CustomerDataMgt bind listener {
 
     http:Response res = new;
     res.setJsonPayload(untaint response);
-    _ = caller -> respond(res);
+    _ = caller->respond(res);
   }
 }
