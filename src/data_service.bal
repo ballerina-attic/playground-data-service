@@ -23,7 +23,8 @@ service<http:Service> CustomerDataMgt bind listener {
     path:"/customer"
   }
   customers(endpoint caller, http:Request req) {
-    // Endpoints can connect to dbs with SQL connector.
+
+    // Endpoints can connect to databases with SQL connectors
     endpoint h2:Client customerDB {
       path: DB_HOST,
       name: DB_NAME,
@@ -32,12 +33,12 @@ service<http:Service> CustomerDataMgt bind listener {
       poolOptions: { maximumPoolSize: 1 }
     };
 
-    // Invoke 'select' command against remote database.
-    // Table primitive type represents a set of records.
-    table dt = check customerDB -> select(
-                          "SELECT * FROM CUSTOMER", null);
+    // Invokes 'select' action against the endpoint.
+    // The 'table' primitive type represents a set of records.
+    table dt = check customerDB -> 
+        select("SELECT * FROM CUSTOMER", null);
 
-    // Tables can be cast to JSON and XML.
+    // Tables can be cast to JSON and XML
     json response = check <json>dt;
 
     http:Response res = new;
