@@ -21,11 +21,5 @@ GET all Customers
 
 ``` 
 curl http://localhost:9090/customer
+
 ```
-
-ToDo:
-
-// Get database credentials via configuration API.
-const string user_name =? config:getAsString("username");
-const string password =? config:getAsString("password");
-const string DB_NAME="CUSTOMER_DB";
