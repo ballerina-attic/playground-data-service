@@ -1,6 +1,7 @@
 import ballerina/config;
 import ballerina/http;
 import ballerina/h2;
+import ballerina/log;
 import ballerina/sql;
 
 listener http:Listener httpListener = new(9090);
@@ -39,9 +40,9 @@ service CustomerDataMgt on httpListener {
         select("SELECT * FROM CUSTOMER", ());
     if (selectRet is table<record {}>) {
       // Tables can be cast to JSON and XML
-      var response = json.convert(selectRet);
-      if (response is json) {
-        res.setPayload(untaint response);
+      var jsonConvertRet = json.convert(selectRet);
+      if (jsonConvertRet is json) {
+        res.setPayload(untaint jsonConvertRet);
       } else {
         res.statusCode = 500;
         res.setPayload({ "Error": "Internal error occurred"});
@@ -50,6 +51,9 @@ service CustomerDataMgt on httpListener {
       res.statusCode = 500;
       res.setPayload({ "Error": "Internal error occurred"});
     }
-    _ = caller->respond(res);
+    var respondRet = caller->respond(res);
+    if (respondRet is error) {
+        log:printError("Error responding to the client", err = respondRet);
+    }
   }
 }
