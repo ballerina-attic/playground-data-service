@@ -1,7 +1,6 @@
 import ballerina/config;
 import ballerina/http;
 import ballerina/h2;
-import ballerina/log;
 import ballerina/sql;
 
 listener http:Listener httpListener = new(9090);
@@ -21,9 +20,9 @@ service CustomerDataMgt on httpListener {
     methods:["GET"],
     path:"/customer"
   }
-  resource function customers(http:Caller caller, http:Request req) {
-
-    // SQL client enables interaction with databases
+  resource function customers(http:Caller caller, http:Request req)
+                        returns error? {
+    // Database client enables interaction with databases
     h2:Client customerDB = new({
         path: DB_HOST,
         name: DB_NAME,
@@ -32,28 +31,18 @@ service CustomerDataMgt on httpListener {
         poolOptions: { maximumPoolSize: 1 }
       });
 
-    http:Response res = new;
-
     // Invokes 'select' remote function against the client.
     // The 'table' primitive type represents a set of records.
-    var selectRet = customerDB->
-        select("SELECT * FROM CUSTOMER", ());
-    if (selectRet is table<record {}>) {
-      // Tables can be cast to JSON and XML
-      var jsonConvertRet = json.convert(selectRet);
-      if (jsonConvertRet is json) {
-        res.setPayload(untaint jsonConvertRet);
-      } else {
-        res.statusCode = 500;
-        res.setPayload({ "Error": "Internal error occurred"});
-      }
-    } else {
-      res.statusCode = 500;
-      res.setPayload({ "Error": "Internal error occurred"});
-    }
-    var respondRet = caller->respond(res);
-    if (respondRet is error) {
-        log:printError("Error responding to the client", err = respondRet);
-    }
+    table<record {}> dt = check customerDB->
+            select("SELECT * FROM CUSTOMER", ());
+
+    // Tables can be converted to JSON and XML
+    json response = check json.convert(dt);
+
+    http:Response res = new;
+    res.setPayload(untaint response);
+    _ = caller->respond(res);
+
+    return;
   }
 }
