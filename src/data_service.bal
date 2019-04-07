@@ -41,7 +41,7 @@ service CustomerDataMgt on httpListener {
 
     http:Response res = new;
     res.setPayload(untaint response);
-    _ = caller->respond(res);
+    _ = check caller->respond(res);
 
     return;
   }
